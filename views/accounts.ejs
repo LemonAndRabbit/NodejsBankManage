@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="utf-8">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理-账户管理</title>
+    <link rel="stylesheet" href="/public/stylesheets/users.css">
+    <script type="text/javascript" src="https://himg2.huanqiu.com/statics/hq2013/js/lib/jquery1.9.1.js"></script>
+    <script type="text/javascript" src="/public/javascripts/users.js"></script>
+</head>
+<body>
+<% include common/top.ejs%>
+<div class="add_button">
+    <img src="/public/images/users/add.png">
+</div>
+<div class="add_form">
+    <img src="/public/images/users/add.png">
+    <div class="form_bg"></div>
+    <form action="?" method="post">
+        户号: <input type="text" name="id" autofocus="autofocus"><br>
+        账户类型: <select name="atype">
+            <option value="储蓄账户">储蓄账户</option>
+            <option value="支票账户">支票账户</option>
+        </select><br>
+        利率: <input type="number" name="ratio"><br>
+        货币类型: <input type="text" name="ctype"><br>
+        透支额: <input type="number" name="credit"><br>
+        <input type="submit" value="添加">
+    </form>
+</div>
+<%if(typeof modData != 'undefined'){%>
+    <div class="add_form" style="display: flex">
+        <img src="/public/images/users/add.png">
+        <div class="form_bg"></div>
+        <form action="?" method="post">
+            <input type="hidden" name="modified" value="<%= modData[0].户号 %>">
+            户号:<input type="text" name="id" value="<%=modData[0].户号%>" readonly><br>
+            账户类型: <input type="text" name="atype" value="<%=modData[0].账户类型%>" readonly><br>
+            利率: <input type="number" name="ratio" value="<%=modData[0].利率%>"><br>
+            货币类型: <input type="text" name="ctype" value="<%=modData[0].货币类型%>"><br>
+            透支额: <input type="number" name="credit" value="<%=modData[0].透支额%>"><br>
+            <input type="submit" value="确认修改">
+        </form>
+    </div>
+<%}%>
+<div class="filter_form">
+    <form action="accounts" method="get">
+        <input type="hidden" name="action" value="filter" autocomplete="on">
+        户号: <input type="text" value="<%=oldFilterData.id%>" name="id" autofocus="autofocus">
+        账户类型: <select name="atype" value="<%oldFilterData.atype%>">
+            <option value="">全部账户</option>
+            <option value="储蓄账户">储蓄账户</option>
+            <option value="支票账户">支票账户</option>
+        </select>
+        货币类型: <input type="text" value="<%=oldFilterData.ctype%>" name="ctype">
+        <input type="submit" value="查询">
+    </form>
+</div>
+<table>
+    <tr>
+        <th class="id">户号</th>
+        <th class="left">余额</th>
+        <th class="date">开户日期</th>
+        <th class="atype">账户类型</th>
+        <th class="ratio">利率</th>
+        <th class="ctype">货币类型</th>
+        <th class="credit">透支额</th>
+        <th class="operation">操作</th>
+    </tr>
+    <% for(var i = 0;i<formData.length;i++){%>
+    <tr>
+        <td><%=formData[i].户号%></td>
+        <td><%=formData[i].余额%></td>
+        <td><%=formData[i].开户日期%></td>
+        <td><%=formData[i].账户类型%></td>
+        <td><%=formData[i].利率%></td>
+        <td><%=formData[i].货币类型%></td>
+        <td><%=formData[i].透支额%></td>
+        <td>
+            <a href="?action=del&id=<%=formData[i].户号%>&atype=<%=formData[i].账户类型%>" onclick="return confirm('确定删除？')">
+                <button>删除</button>
+            </a>
+            <a href="?action=mod&id=<%=formData[i].户号%>&atype=<%=formData[i].账户类型%>">
+                <button>修改</button>
+            </a>
+        </td>
+    </tr>
+    <%}%>
+</table>
+</body>
+</html>

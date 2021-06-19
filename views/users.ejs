@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="utf-8">
+<head>
+    <meta charset="UTF-8">
+    <title>后台管理-客户管理</title>
+    <link rel="stylesheet" href="/public/stylesheets/users.css">
+    <script type="text/javascript" src="https://himg2.huanqiu.com/statics/hq2013/js/lib/jquery1.9.1.js"></script>
+    <script type="text/javascript" src="/public/javascripts/users.js"></script>
+</head>
+<body>
+<% include common/top.ejs%>
+<div class="add_button">
+    <img src="/public/images/users/add.png">
+</div>
+<div class="add_form">
+    <img src="/public/images/users/add.png">
+    <div class="form_bg"></div>
+    <form action="?" method="post">
+        姓名: <input type="text" name="name" autofocus="autofocus"><br>
+        身份证号: <input type="text" name="id"><br>
+        联系电话: <input type="text" name="telephone"><br>
+        家庭住址: <input type="text" name="address"><br>
+        <input type="submit" value="添加">
+    </form>
+</div>
+<%if(typeof modData != 'undefined'){%>
+    <div class="add_form" style="display: flex">
+        <img src="/public/images/users/add.png">
+        <div class="form_bg"></div>
+        <form action="?" method="post">
+            <input type="hidden" name="modified" value="<%= modData[0].客户身份证号 %>">
+            姓名: <input type="text" name="name" autofocus="autofocus" value="<%=modData[0].客户姓名%>"><br>
+            身份证号: <input type="text" name="id" value="<%=modData[0].客户身份证号%>" readonly><br>
+            联系电话: <input type ="text" name="telephone" value="<%=modData[0].客户联系电话%>"><br>
+            家庭住址: <input type="text" name="address" value="<%=modData[0].客户家庭住址%>"><br>
+            <input type="submit" value="确认修改">
+        </form>
+    </div>
+<%}%>
+<div class="filter_form">
+    <form action="users" method="get">
+        <input type="hidden" name="action" value="filter" autocomplete="on">
+        姓名: <input type="text" name="name" value="<%=oldFilterData.name%>" autofocus="autofocus">
+        身份证号: <input type="text" value="<%=oldFilterData.id%>" name="id">
+        联系电话: <input type="text" value="<%=oldFilterData.telephone%>" name="telephone">
+        家庭住址: <input type="text" value="<%=oldFilterData.address%>" name="address">
+        <input type="submit" value="查询">
+    </form>
+</div>
+<table>
+    <tr>
+        <th class="id">姓名</th>
+        <th class="id">身份证号</th>
+        <th class="title">贷款负责人</th>
+        <th class="author">银行账户负责人</th>
+        <th class="summary">联系电话</th>
+        <th class="href">家庭住址</th>
+        <th class="operation">操作</th>
+    </tr>
+    <% for(var i = 0;i<formData.length;i++){%>
+    <tr>
+        <td><%=formData[i].客户姓名%></td>
+        <td><%=formData[i].客户身份证号%></td>
+        <td><%=formData[i].贷款负责人身份证号%></td>
+        <td><%=formData[i].银行账户负责人身份证号%></td>
+        <td><%=formData[i].客户联系电话%></td>
+        <td><%=formData[i].客户家庭住址%></td>
+        <td>
+            <a href="?action=del&id=<%=formData[i].客户身份证号%>" onclick="return confirm('确定删除？')">
+                <button>删除</button>
+            </a>
+            <a href="?action=mod&id=<%=formData[i].客户身份证号%>">
+                <button>修改</button>
+            </a>
+        </td>
+    </tr>
+    <%}%>
+</table>
+</body>
+</html>
