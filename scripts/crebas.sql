@@ -292,7 +292,7 @@ create table 普通员工
    primary key (职工身份证号)
 );
 */
-
+/*
 create table 贷款
 (
    贷款额                  float not null  comment '',
@@ -317,7 +317,7 @@ create table 贷款持有者关系
    客户身份证号               varchar(30) not null  comment '',
    primary key (贷款号, 客户身份证号)
 );
-
+*/
 alter table U2客户拥有支票账户 add constraint FK_U2客户拥有支票_客户拥有支票账户关_客户 foreign key (客户身份证号)
       references 客户 (客户身份证号) on delete restrict on update restrict;
 
@@ -369,6 +369,7 @@ alter table 职工 add constraint FK_职工_职工从属于支行_支行 foreign
 alter table 联系人信息 add constraint FK_联系人信息_联系人与客户关系_客户 foreign key (客户身份证号)
       references 客户 (客户身份证号) on delete restrict on update restrict;
 */
+/*
 alter table 贷款 add constraint FK_贷款_贷款由支行发放_支行 foreign key (支行名字)
       references 支行 (支行名字) on delete restrict on update restrict;
 
@@ -377,7 +378,7 @@ alter table 贷款持有者关系 add constraint FK_贷款持有者关系_贷款
 
 alter table 贷款持有者关系 add constraint FK_贷款持有者关系_贷款持有者关系2_客户 foreign key (客户身份证号)
       references 客户 (客户身份证号) on delete restrict on update restrict;
-
+*/
 /*
 alter table 部门 add constraint FK_部门_部门经理领导部门关_部门经理 foreign key (职工身份证号)
       references 部门经理 (职工身份证号) on delete restrict on update restrict;

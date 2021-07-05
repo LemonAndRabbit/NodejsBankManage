@@ -17,12 +17,34 @@
     <div class="form_bg"></div>
     <form action="?" method="post">
         贷款号: <input type="text" name="id" autofocus="autofocus"><br>
-        支行名字: <input type="number" name="bank"><br>
-        应支付次数: <input type="text" name="times"><br>
-        总金额: <input type="text" name="money"><br>
+        支行名字: <input type="text" name="bank"><br>
+        应支付次数: <input type="number" name="times"><br>
+        总金额: <input type="number" name="money"><br>
         <input type="submit" value="添加">
     </form>
 </div>
+<%if(typeof giveData != 'undefined'){%>
+    <div class="add_form" style="display: flex">
+        <img src="/public/images/users/add.png">
+        <div class="form_bg"></div>
+        <form action="?" method="post">
+            <input type="hidden" name="give" value="<%=giveData[0].贷款号 %>">
+            发放金额: <input type="number" name="money"><br>
+            <input type="submit" value="确认修改">
+        </form>
+    </div>
+<%}%>
+<%if(typeof linkData != 'undefined'){%>
+<div class="add_form" style="display: flex">
+    <img src="/public/images/users/add.png">
+    <div class="form_bg"></div>
+    <form action="?" method="post">
+        <input type="hidden" name="link" value="<%=linkData[0].贷款号 %>">
+        客户身份证号: <input type="text" name="id"><br>
+        <input type="submit" value="确认关联">
+    </form>
+</div>
+<%}%>
 <div class="filter_form">
     <form action="loans" method="get">
         <input type="hidden" name="action" value="filter" autocomplete="on">
@@ -58,9 +80,11 @@
         <td><%=formData[i].已支付金额%></td>
         <td><%=formData[i].支付状态%></td>
         <td>
+            <% if(formData[i].支付状态 != '部分支付') {%>
             <a href="?action=del&id=<%=formData[i].贷款号%>" onclick="return confirm('确定删除？')">
                 <button>删除</button>
             </a>
+            <%}%>
             <a href="?action=give&id=<%=formData[i].贷款号%>">
                 <button>发放</button>
             </a>

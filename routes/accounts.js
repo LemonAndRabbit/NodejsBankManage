@@ -91,7 +91,6 @@ router.get('/', function(req, res, next) {
 });
 
 /* POST Method */
-
 router.post('/', function(req, res) {
     console.log(req.body);
     const id = req.body.id.trim();

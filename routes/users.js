@@ -22,17 +22,35 @@ router.get('/', function(req, res, next) {
     switch(req.query.action) {
         case 'del':
             console.log('prepare to delete id=' + req.query.id);
-            db.query('DELETE FROM 联系人信息 WHERE 客户身份证号="' + req.query.id + '"', function (err,resultData) {
-                if(err) {
+            db.query('SELECT * FROM all_link_info WHERE 客户身份证号="' + req.query.id + '"', function(err,check1Data) {
+                if (err) {
                     console.error(err);
                     res.status(500).send({code: 500, msg: 'database error'});
+                } else if (check1Data.length !== 0){
+                    res.status(500).send({code: 500, msg: '禁止删除，因为存在关联账户'});
                 } else {
-                    db.query('DELETE FROM 客户 WHERE 客户身份证号="' + req.query.id+'"', function (err, resultData) {
-                        if(err) {
+                    db.query('SELECT * FROM 贷款持有者关系 WHERE 客户身份证号="' + req.query.id + '"', function(err, check2Data) {
+                        if (err) {
                             console.error(err);
                             res.status(500).send({code: 500, msg: 'database error'});
+                        } else if (check2Data.length !== 0){
+                            res.status(500).send({code: 500, msg: '禁止删除，因为存在关联贷款'});
                         } else {
-                            res.redirect('/users');
+                            db.query('DELETE FROM 联系人信息 WHERE 客户身份证号="' + req.query.id + '"', function (err,resultData) {
+                                if(err) {
+                                    console.error(err);
+                                    res.status(500).send({code: 500, msg: 'database error'});
+                                } else {
+                                    db.query('DELETE FROM 客户 WHERE 客户身份证号="' + req.query.id+'"', function (err, resultData) {
+                                        if(err) {
+                                            console.error(err);
+                                            res.status(500).send({code: 500, msg: 'database error'});
+                                        } else {
+                                            res.redirect('/users');
+                                        }
+                                    });
+                                }
+                            });
                         }
                     });
                 }

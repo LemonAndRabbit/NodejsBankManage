@@ -1,5 +1,16 @@
 const validator = require("validator");
 
+const mysql = require('mysql');
+
+/* connect to admin account database */
+const db = mysql.createPool({
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    password: 'password',
+    database: 'test'
+});
+
 function userValidate(id, telephone, address, name) {
     if(!(validator.isAlphanumeric(id) && validator.isAlphanumeric(telephone) && validator.isAlphanumeric(address)
         && validator.isAlphanumeric(name))) {
@@ -32,6 +43,32 @@ function delLoanValidate(query){
     return({valid: true, msg: ''});
 }
 
+function addLinkValidate(atype, id, bname){
+    var res;
+    db.query('SELECT * FROM 客户 WHERE 客户身份证号 ="' + id + '"', function(err, resData) {
+        if (err) {
+            console.error(err);
+            res.valid = false;
+            res.msg = 'Internal Error';
+        } else if(resData.length === 0) {
+            res.valid = false;
+            res.msg = 'no such account';
+        } else {
+            res.valid = true;
+            res.msg = '';
+        }
+    });
+    return res;
+}
+
+function delLinkValidate(query) {
+    return {valid: true, msg: ''};
+}
+
+function addLoanValidate(id, bank, times, money) {
+    return {valid: true, msg: ''};
+}
+
 module.exports = {
     userValidate,
     addAccountValidate,
@@ -39,5 +76,10 @@ module.exports = {
     modAccountValidate,
     filterAccountValidate,
 
-    delLoanValidate
+    delLoanValidate,
+
+    addLinkValidate,
+    delLinkValidate,
+
+    addLoanValidate
 }

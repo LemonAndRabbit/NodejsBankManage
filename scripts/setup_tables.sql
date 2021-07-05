@@ -1,6 +1,5 @@
 use test;
 
-
 /* 围绕银行员工的一些关系 */
 /*
 create table 支行
@@ -105,7 +104,7 @@ alter table 联系人信息 add constraint FK_联系人信息对应客户 foreig
       references 客户 (客户身份证号) on delete restrict on update restrict;
 */
 /* 账户所有关系 */
-/*
+
 create table 客户拥有支票账户
 (
    客户身份证号               varchar(30) not null  comment '',
@@ -123,9 +122,28 @@ create table 客户拥有储蓄账户
    访问日期                date not null  comment '',
    primary key (客户身份证号, 支行名字)
 );
-*/
+
+alter table 客户拥有支票账户 add constraint 客户拥有支票_客户 foreign key (客户身份证号)
+    references 客户 (客户身份证号) on delete restrict on update restrict;
+
+alter table 客户拥有支票账户 add constraint 客户拥有支票_支行 foreign key (支行名字)
+    references 支行 (支行名字) on delete restrict on update restrict;
+
+alter table 客户拥有支票账户 add constraint 客户拥有支票_支票账户 foreign key (户号)
+    references 支票账户 (户号) on delete restrict on update restrict;
+
+alter table 客户拥有储蓄账户 add constraint 客户拥有储蓄账户_客户 foreign key (客户身份证号)
+    references 客户 (客户身份证号) on delete restrict on update restrict;
+
+alter table 客户拥有储蓄账户 add constraint 客户拥有储蓄账户_支行 foreign key (支行名字)
+    references 支行 (支行名字) on delete restrict on update restrict;
+
+alter table 客户拥有储蓄账户 add constraint 客户拥有储蓄账户_储蓄账户 foreign key (户号)
+    references 储蓄账户 (户号) on delete restrict on update restrict;
+
 
 /* 贷款相关关系 */
+/*
 create table 贷款
 (
    贷款额                  float not null  comment '',
@@ -162,3 +180,5 @@ alter table 贷款持有者关系 add constraint FK_贷款持有者关系_贷款
 
 alter table 贷款持有者关系 add constraint FK_贷款持有者关系_客户 foreign key (客户身份证号)
       references 客户 (客户身份证号) on delete restrict on update restrict;
+*/
+
