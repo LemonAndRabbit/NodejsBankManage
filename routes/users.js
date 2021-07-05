@@ -15,7 +15,7 @@ const db = mysql.createPool({
 });
 
 /* default FilterData*/
-const defaultFilterData = {id: '', telephone: '', address: '', name: ''};
+const defaultFilterData = {id: '', telephone: '', address: '', name: '', accountmaster: '', loanmaster: ''};
 
 /* GET users listing. */
 router.get('/', function(req, res, next) {
@@ -79,7 +79,7 @@ router.get('/', function(req, res, next) {
         case 'filter':
             const filterRes = filter.userFilter(req);
             if(filterRes.correctness === false){
-                res.status(400, filterRes.dialog);
+                res.status(400).send({code: 400, msg: filterRes.dialog});
             } else {
                 const oldFilterData = filterRes.oldFilterData;
                 db.query('SELECT * FROM 客户' + filterRes.dialog, function (err, resultData) {
@@ -112,16 +112,19 @@ router.post('/', function(req, res) {
     var telephone = req.body.telephone.trim();
     var address = req.body.address.trim();
     var name = req.body.name.trim();
+    var loanmaster = req.body.loanmaster.trim();
+    var accountmaster = req.body.accountmaster.trim();
 
     if( !(id && telephone && address && name)) {
         res.status(400).send({code: 400, msg: 'missing parameters'}).end();
-    } else if( validator.userValidate(id, telephone, address, name).code !== 500){
-        const msg = validator.userValidate(id, telephone, address, name).msg;
+    } else if( validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).code !== 500){
+        const msg = validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).msg;
         res.status(400).send({code: 400, msg: msg});
     } else {
         if(req.body.modified){
             db.query('UPDATE 客户 SET 客户姓名="' + name +'", 客户联系电话="' + telephone + '", 客户家庭住址="' + address
-                + '" WHERE 客户身份证号="' + id + '"', function (err, resultData){
+                + '", 贷款负责人身份证号="' + loanmaster + '", 银行账户负责人身份证号="' + accountmaster + '" WHERE 客户身份证号="' + id + '"',
+                function (err, resultData){
                 if(err){
                     console.error(err);
                     res.status(500).send({code:500,msg:'database error'});
@@ -130,8 +133,8 @@ router.post('/', function(req, res) {
                 }
             });
         } else {
-            db.query('INSERT INTO 客户 (客户身份证号, 客户联系电话, 客户家庭住址, 客户姓名) VALUE("' + id + '","' + telephone
-                + '","' + address + '","' + name + '")', function (err, data){
+            db.query('INSERT INTO 客户 (客户身份证号, 客户联系电话, 客户家庭住址, 客户姓名, 贷款负责人身份证号, 银行账户负责人身份证号) VALUE("' + id + '","' + telephone
+                + '","' + address + '","' + name + '","'+ loanmaster + '","' + accountmaster + '")', function (err, data){
                 if(err) {
                     console.log(err);
                     res.status(500).send({code: 500, msg: 'database error'}).end();

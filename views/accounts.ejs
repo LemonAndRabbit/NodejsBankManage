@@ -21,9 +21,10 @@
             <option value="储蓄账户">储蓄账户</option>
             <option value="支票账户">支票账户</option>
         </select><br>
-        利率: <input type="number" name="ratio"><br>
+        余额: <input type="text" name="left"><br>
+        利率: <input type="text" name="ratio"><br>
         货币类型: <input type="text" name="ctype"><br>
-        透支额: <input type="number" name="credit"><br>
+        透支额: <input type="text" name="credit"><br>
         <input type="submit" value="添加">
     </form>
 </div>
@@ -35,9 +36,10 @@
             <input type="hidden" name="modified" value="<%= modData[0].户号 %>">
             户号:<input type="text" name="id" value="<%=modData[0].户号%>" readonly><br>
             账户类型: <input type="text" name="atype" value="<%=modData[0].账户类型%>" readonly><br>
-            利率: <input type="number" name="ratio" value="<%=modData[0].利率%>"><br>
+            余额: <input type="text" name="left" value="<%=modData[0].余额%>"><br>
+            利率: <input type="text" name="ratio" value="<%=modData[0].利率%>"><br>
             货币类型: <input type="text" name="ctype" value="<%=modData[0].货币类型%>"><br>
-            透支额: <input type="number" name="credit" value="<%=modData[0].透支额%>"><br>
+            透支额: <input type="text" name="credit" value="<%=modData[0].透支额%>"><br>
             <input type="submit" value="确认修改">
         </form>
     </div>

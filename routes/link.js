@@ -53,19 +53,21 @@ router.post('/', function(req, res) {
     var id = req.body.id;
     var bname = req.body.bname;
     var account = req.body.account;
-    //var check = validator.addLinkValidate(atype, id, bname);
-    console.log('INSERT INTO ' + atype + ' VALUE("' + id + '","' + bname
-        + '","' + account + '","' + dater.format(new Date(), 'YYYY-MM-DD HH:mm') + '")');
-
-    db.query('INSERT INTO ' + atype + ' VALUE("' + id + '","' + bname
-        + '","' + account + '","' + dater.format(new Date(), 'YYYY-MM-DD HH:mm') + '")', function (err, data){
-        if(err) {
-            console.log(err);
-            res.status(500).send({code: 500, msg: 'database error'}).end();
-        } else {
-            res.redirect('/link');
-        }
-    });
+    var check = validator.addLinkValidate(atype, id, bname, account);
+    if(!check.valid) {
+        const msg = check.msg;
+        res.status(400).send({code: 400, msg: msg});
+    } else {
+        db.query('INSERT INTO ' + atype + ' VALUE("' + id + '","' + bname
+            + '","' + account + '","' + dater.format(new Date(), 'YYYY-MM-DD HH:mm') + '")', function (err, data){
+            if(err) {
+                console.log(err);
+                res.status(500).send({code: 500, msg: 'database error'}).end();
+            } else {
+                res.redirect('/link');
+            }
+        });
+    }
 });
 
 module.exports = router;

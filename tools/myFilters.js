@@ -7,11 +7,14 @@ function userFilter(req){
     const telephone = req.query.telephone.trim();
     const address = req.query.address.trim();
     const name = req.query.name.trim();
-    const check = validator.userValidate(id?id:'000', telephone?telephone:'000', address?address:'000',
-        name?name:'000');
+    const accountmaster = req.query.accountmaster.trim();
+    const loanmaster = req.query.loanmaster.trim();
+    const check = validator.userValidate(id!==''?id:'000', telephone!==''?telephone:'000', address!==''?address:'000',
+        name!==''?name:'000', accountmaster!==''?accountmaster:'000', loanmaster!==''?loanmaster:'000');
     if(check.code!==500)
         return {correctness: false, dialog: check.msg};
     var query = '';
+    console.log('here!');
     if(id)
         query = query + '客户身份证号="' + id + '"';
     if(telephone){
@@ -29,11 +32,22 @@ function userFilter(req){
             query = query + ' and ';
         query = query + '客户姓名="' + name + '"';
     }
+    if(accountmaster){
+        if(query !== '')
+            query = query + ' and ';
+        query = query + '银行账户负责人身份证号="' + accountmaster + '"';
+    }
+    if(loanmaster){
+        if(query !== '')
+            query = query + ' and ';
+        query = query + '贷款负责人身份证号="' + loanmaster + '"';
+    }
 
     if(query)
         query = ' WHERE ' + query;
+    console.log(query);
     return {correctness: true, dialog: query, oldFilterData: {id: id, telephone: telephone,
-            address: address, name: name}};
+            address: address, name: name, accountmaster: accountmaster, loanmaster: loanmaster}};
 }
 
 function accountFilter(query) {
@@ -66,7 +80,7 @@ function loanFilter(query) {
     const id = query.id.trim();
     const bank = query.bank.trim();
     const status = query.status.trim();
-    const check = validator.filterAccountValidate(id?id:'000', bank?bank:'000', status?status:'未支付');
+    const check = validator.filterLoanValidate(id?id:'000', bank?bank:'000');
     if(!check.valid)
         return ({correctness: false, msg: check.msg});
     var filter = '';

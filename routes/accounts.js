@@ -26,21 +26,29 @@ router.get('/', function(req, res, next) {
             if(!check.valid) {
                 res.status(400).send({code: 400, msg: check.msg});
             } else {
-                db.query('DELETE FROM ' + req.query.atype + ' WHERE 户号="' + req.query.id + '"', function (err, Data) {
+                db.query('DELETE FROM 客户拥有' + req.query.atype
+                    + ' WHERE 户号="' + req.query.id + '"', function (err, Data0) {
                     if(err) {
                         console.error(err);
                         res.status(500).send({code: 500, msg: 'database error'});
                     } else {
-                        db.query('DELETE FROM 银行账户 WHERE 户号="' + req.query.id+'"', function (err, resultData) {
+                        db.query('DELETE FROM ' + req.query.atype + ' WHERE 户号="' + req.query.id + '"', function (err, Data) {
                             if(err) {
                                 console.error(err);
                                 res.status(500).send({code: 500, msg: 'database error'});
                             } else {
-                                res.redirect('/accounts');
+                                db.query('DELETE FROM 银行账户 WHERE 户号="' + req.query.id+'"', function (err, resultData) {
+                                    if(err) {
+                                        console.error(err);
+                                        res.status(500).send({code: 500, msg: 'database error'});
+                                    } else {
+                                        res.redirect('/accounts');
+                                    }
+                                });
                             }
                         });
                     }
-                });
+                })
             }
             break;
         case 'mod':
@@ -65,7 +73,7 @@ router.get('/', function(req, res, next) {
         case 'filter':
             const filterRes = filter.accountFilter(req.query);
             if(filterRes.correctness === false){
-                res.status(400, filterRes.dialog);
+                res.status(400).send({code: 400, msg: filterRes.msg});
             } else {
                 const oldFilterData = filterRes.oldFilterData;
                 db.query('SELECT * FROM all_account_info' + filterRes.dialog, function (err, resultData) {
@@ -98,6 +106,7 @@ router.post('/', function(req, res) {
     const ratio = req.body.ratio.trim();
     const ctype = req.body.ctype.trim();
     const credit = req.body.credit.trim();
+    const left = req.body.left.trim();
     if( !(id && atype)) {
         res.status(400).send({code: 400, msg: 'missing parameters'}).end();
     } else if (req.body.modified){
@@ -106,33 +115,40 @@ router.post('/', function(req, res) {
             const msg = check.msg;
             res.status(400).send({code: 400, msg: msg});
         } else {
-            if(atype === '储蓄账户'){
-                db.query('UPDATE 储蓄账户 SET 利率=' + ratio + ', 货币类型="' + ctype + '" WHERE 户号="' + id + '"', function (err, Data) {
-                    if(err) {
-                        console.log(err);
-                        res.status(500).send({code: 500, msg: 'database error'}).end();
+            db.query('UPDATE 银行账户 SET 余额=' + left + ' WHERE 户号="' + id + '"', function(err, Data0){
+                if(err) {
+                    console.log(err);
+                    res.status(500).send({code: 500, msg: 'database error'}).end();
+                } else {
+                    if(atype === '储蓄账户'){
+                        db.query('UPDATE 储蓄账户 SET 利率=' + ratio + ', 货币类型="' + ctype + '" WHERE 户号="' + id + '"', function (err, Data) {
+                            if(err) {
+                                console.log(err);
+                                res.status(500).send({code: 500, msg: 'database error'}).end();
+                            } else {
+                                res.redirect('/accounts');
+                            }
+                        })
                     } else {
-                        res.redirect('/accounts');
+                        db.query('UPDATE 支票账户 SET 透支额=' + credit + ' WHERE 户号="' + id + '"', function (err, Data) {
+                            if(err) {
+                                console.log(err);
+                                res.status(500).send({code: 500, msg: 'database error'}).end();
+                            } else {
+                                res.redirect('/accounts');
+                            }
+                        })
                     }
-                })
-            } else {
-                db.query('UPDATE 支票账户 SET 透支额=' + credit + ' WHERE 户号="' + id + '"', function (err, Data) {
-                    if(err) {
-                        console.log(err);
-                        res.status(500).send({code: 500, msg: 'database error'}).end();
-                    } else {
-                        res.redirect('/accounts');
-                    }
-                })
-            }
+                }
+            })
         }
     } else {
         const check = validator.addAccountValidate(req.body);
-        if( !check.valid){
+        if(!check.valid){
             const msg = check.msg;
             res.status(400).send({code: 400, msg: msg});
         } else {
-            db.query('INSERT INTO 银行账户(户号, 余额, 开户日期) VALUES("' + id + '", ' + 0 + ',"' +
+            db.query('INSERT INTO 银行账户(户号, 余额, 开户日期) VALUES("' + id + '", ' + left + ',"' +
                 dater.format(new Date(), 'YYYY-MM-DD HH:mm') + '")', function (err ,Data) {
                 if(err) {
                     console.log(err);

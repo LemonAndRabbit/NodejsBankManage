@@ -20,6 +20,8 @@
         身份证号: <input type="text" name="id"><br>
         联系电话: <input type="text" name="telephone"><br>
         家庭住址: <input type="text" name="address"><br>
+        贷款负责人身份证号: <input type="text" name="loanmaster"><br>
+        银行账户负责人身份证号: <input type="text" name="accountmaster"><br>
         <input type="submit" value="添加">
     </form>
 </div>
@@ -33,6 +35,8 @@
             身份证号: <input type="text" name="id" value="<%=modData[0].客户身份证号%>" readonly><br>
             联系电话: <input type ="text" name="telephone" value="<%=modData[0].客户联系电话%>"><br>
             家庭住址: <input type="text" name="address" value="<%=modData[0].客户家庭住址%>"><br>
+            贷款负责人身份证号: <input type="text" name="loanmaster" value="<%=modData[0].贷款负责人身份证号%>"><br>
+            银行账户负责人身份证号: <input type="text" name="accountmaster" value="<%=modData[0].银行账户负责人身份证号%>"><br>
             <input type="submit" value="确认修改">
         </form>
     </div>
@@ -44,6 +48,8 @@
         身份证号: <input type="text" value="<%=oldFilterData.id%>" name="id">
         联系电话: <input type="text" value="<%=oldFilterData.telephone%>" name="telephone">
         家庭住址: <input type="text" value="<%=oldFilterData.address%>" name="address">
+        贷款负责人: <input type="text" value="<%=oldFilterData.loanmaster%>" name="loanmaster">
+        账户负责人: <input type="text" value="<%=oldFilterData.accountmaster%>" name="accountmaster">
         <input type="submit" value="查询">
     </form>
 </div>
