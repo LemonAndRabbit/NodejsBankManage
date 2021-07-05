@@ -41,6 +41,20 @@
         </form>
     </div>
 <%}%>
+<%if(typeof contactData != 'undefined'){%>
+    <div class="add_form" style="display: flex">
+        <img src="/public/images/users/add.png">
+        <div class="form_bg"></div>
+        <form action="?" method="post">
+            <input type="hidden" name="contactify" value="<%= contactData.客户身份证号 %>">
+            姓名: <input type="text" name="name" autofocus="autofocus" value="<%=contactData.联系人姓名%>"><br>
+            联系电话: <input type ="text" name="telephone" value="<%=contactData.联系人手机号%>"><br>
+            关系: <input type="text" name="relationship" value="<%=contactData.联系人关系%>"><br>
+            email: <input type="email" name="email" value="<%=contactData.联系人email%>"><br>
+            <input type="submit" value="确认修改">
+        </form>
+    </div>
+<%}%>
 <div class="filter_form">
     <form action="users" method="get">
         <input type="hidden" name="action" value="filter" autocomplete="on">
@@ -77,6 +91,9 @@
             </a>
             <a href="?action=mod&id=<%=formData[i].客户身份证号%>">
                 <button>修改</button>
+            </a>
+            <a href="?action=contact&id=<%=formData[i].客户身份证号%>">
+                <button>联系人</button>
             </a>
         </td>
     </tr>

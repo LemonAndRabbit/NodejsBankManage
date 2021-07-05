@@ -76,6 +76,25 @@ router.get('/', function(req, res, next) {
                 }
             });
             break;
+        case 'contact':
+            db.query('SELECT * FROM 联系人信息 WHERE 客户身份证号="' + req.query.id + '"', function (err, contactData){
+                if (err) {
+                    console.error(err);
+                    res.status(500).send({code: 500, msg: 'database error'}).end();
+                } else {
+                    db.query('SELECT * FROM 客户', function (err, allData) {
+                        if (err) {
+                            console.error(err);
+                            res.status(500).send({code: 500, msg: 'database error'}).end();
+                        } else {
+                            res.render('users.ejs', {formData: allData,
+                                contactData: contactData.length===0?{客户身份证号: req.query.id, 联系人姓名: '', 联系人手机号: '', 联系人关系: '', 联系人email: ''}:contactData[0],
+                                oldFilterData: defaultFilterData});
+                        }
+                    });
+                }
+            });
+            break;
         case 'filter':
             const filterRes = filter.userFilter(req);
             if(filterRes.correctness === false){
@@ -108,40 +127,70 @@ router.get('/', function(req, res, next) {
 
 /* POST Method */
 router.post('/', function(req, res) {
-    var id = req.body.id.trim();
-    var telephone = req.body.telephone.trim();
-    var address = req.body.address.trim();
-    var name = req.body.name.trim();
-    var loanmaster = req.body.loanmaster.trim();
-    var accountmaster = req.body.accountmaster.trim();
+    if(req.body.contactify) {
+        var id = req.body.contactify.trim();
+        var name = req.body.name.trim();
+        var telephone = req.body.telephone.trim();
+        var relationship = req.body.relationship.trim();
+        var email = req.body.email.trim();
 
-    if( !(id && telephone && address && name)) {
-        res.status(400).send({code: 400, msg: 'missing parameters'}).end();
-    } else if( validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).code !== 500){
-        const msg = validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).msg;
-        res.status(400).send({code: 400, msg: msg});
-    } else {
-        if(req.body.modified){
-            db.query('UPDATE 客户 SET 客户姓名="' + name +'", 客户联系电话="' + telephone + '", 客户家庭住址="' + address
-                + '", 贷款负责人身份证号="' + loanmaster + '", 银行账户负责人身份证号="' + accountmaster + '" WHERE 客户身份证号="' + id + '"',
-                function (err, resultData){
-                if(err){
-                    console.error(err);
-                    res.status(500).send({code:500,msg:'database error'});
-                }else{
-                    res.redirect('/users');
-                }
-            });
+        const check = validator.contactValidate(name, telephone, relationship, email);
+        if(!check.valid) {
+            res.status(400).send({code: 400, msg: check.msg}).end();
         } else {
-            db.query('INSERT INTO 客户 (客户身份证号, 客户联系电话, 客户家庭住址, 客户姓名, 贷款负责人身份证号, 银行账户负责人身份证号) VALUE("' + id + '","' + telephone
-                + '","' + address + '","' + name + '","'+ loanmaster + '","' + accountmaster + '")', function (err, data){
+            db.query('DELETE FROM 联系人信息 WHERE 客户身份证号="' + id + '"', function (err, Data0) {
                 if(err) {
                     console.log(err);
                     res.status(500).send({code: 500, msg: 'database error'}).end();
                 } else {
-                    res.redirect('/users');
+                    db.query('INSERT INTO 联系人信息 VALUES("' + id + '","' + name +'","' + telephone + '","'
+                        + relationship + '","' + email + '")', function (err, Data1) {
+                        if(err) {
+                            console.log(err);
+                            res.status(500).send({code: 500, msg: 'database error'}).end();
+                        } else {
+                            res.redirect('/users');
+                        }
+                    })
                 }
-            });
+            })
+        }
+    } else {
+        var id = req.body.id.trim();
+        var telephone = req.body.telephone.trim();
+        var address = req.body.address.trim();
+        var name = req.body.name.trim();
+        var loanmaster = req.body.loanmaster.trim();
+        var accountmaster = req.body.accountmaster.trim();
+
+        if( !(id && telephone && address && name)) {
+            res.status(400).send({code: 400, msg: 'missing parameters'}).end();
+        } else if( validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).code !== 500){
+            const msg = validator.userValidate(id, telephone, address, name, loanmaster, accountmaster).msg;
+            res.status(400).send({code: 400, msg: msg});
+        } else {
+            if(req.body.modified){
+                db.query('UPDATE 客户 SET 客户姓名="' + name +'", 客户联系电话="' + telephone + '", 客户家庭住址="' + address
+                    + '", 贷款负责人身份证号="' + loanmaster + '", 银行账户负责人身份证号="' + accountmaster + '" WHERE 客户身份证号="' + id + '"',
+                    function (err, resultData){
+                        if(err){
+                            console.error(err);
+                            res.status(500).send({code:500,msg:'database error'});
+                        }else{
+                            res.redirect('/users');
+                        }
+                    });
+            } else {
+                db.query('INSERT INTO 客户 (客户身份证号, 客户联系电话, 客户家庭住址, 客户姓名, 贷款负责人身份证号, 银行账户负责人身份证号) VALUE("' + id + '","' + telephone
+                    + '","' + address + '","' + name + '","'+ loanmaster + '","' + accountmaster + '")', function (err, data){
+                    if(err) {
+                        console.log(err);
+                        res.status(500).send({code: 500, msg: 'database error'}).end();
+                    } else {
+                        res.redirect('/users');
+                    }
+                });
+            }
         }
     }
 })

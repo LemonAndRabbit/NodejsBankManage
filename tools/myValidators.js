@@ -24,6 +24,18 @@ function userValidate(id, telephone, address, name, loanmaster, accountmaster) {
     }
 }
 
+function contactValidate(name, telephone, relationship, email) {
+    if(!(validator.matches(name, /^[^']*$/) && validator.matches(relationship, /^[^']*$/) && validator.matches(email, /^[^']*$/)
+            && validator.isAlphanumeric(telephone) && validator.isEmail(email))) {
+        return({valid: false, msg: 'having illegal parameters'});
+    } else if(!(validator.isLength(name, {min:1, max:20}) && validator.isLength(telephone, {min:1, max:20}) &&
+        validator.isLength(relationship, {min:1, max:50}) && validator.isLength(email, {min:1, max:20}))) {
+        return({valid: false, msg: 'illegal parameter length'});
+    } else {
+        return({valid: true, msg: ''});
+    }
+}
+
 function addAccountValidate(query){
     const id = query.id.trim();
     const ratio = query.ratio.trim();
@@ -156,6 +168,7 @@ function delLinkValidate(query) {
 
 module.exports = {
     userValidate,
+    contactValidate,
     addAccountValidate,
     delAccountValidate,
     modAccountValidate,
